@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Find Doctors</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+}
+
+/* Glass card */
+.card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    text-align: center;
+    color: white;
+    width: 350px;
+}
+
+/* Title */
+h2 {
+    margin-bottom: 20px;
+}
+
+/* Inputs */
+input {
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+}
+
+/* Button */
+button {
+    margin-top: 15px;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 25px;
+    background: #00c6ff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #0072ff;
+    transform: scale(1.05);
+}
+
+
+p {
+    font-size: 13px;
+    opacity: 0.8;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>📍 Find Nearby Doctors</h2>
+
+<p>Enter your condition and location</p>
+
+<input id="disease" placeholder="🩺 Enter disease (e.g. fever)">
+<input id="city" placeholder="📍 Enter city (e.g. Delhi)">
+<h2>U'll be redirected to a new page</style></h2>
+<button onclick="searchDoctors()">Search</button>
+
+</div>
+
+<script>
+function searchDoctors() {
+    const disease = document.getElementById("disease").value.trim();
+    const city = document.getElementById("city").value.trim();
+
+    if (!disease || !city) {
+        alert("Please enter both disease and city");
+        return;
+    }
+
+    const query = `${disease} doctors in ${city}`;
+    const url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+
+    window.open(url, "_blank");
+}
+</script>
+
+</body>
+</html>
+

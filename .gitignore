@@ -1,0 +1,69 @@
+# =========================
+# Python cache
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+
+# =========================
+# Virtual environment
+# =========================
+.venv/
+venv/
+.venv-1
+.venv
+.venv-2
+
+# =========================
+# IDE files
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Environment variables
+# =========================
+.env
+
+# =========================
+# Jupyter checkpoints
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# LARGE DATASETS (IMPORTANT DECISION)
+# Uncomment ONLY if dataset is huge
+# =========================
+# dataset/
+
+# =========================
+# MODEL FILES (IMPORTANT DECISION)
+# Keep or ignore based on size
+# If >100MB → ignore
+# =========================
+# *.h5
+# *.pkl
+# *.joblib
+
+# =========================
+# TEMP UPLOADS
+# =========================
+uploads/
+static/uploads/
+
+# =========================
+# TensorFlow cache
+# =========================
+.keras/
+tf_cache/

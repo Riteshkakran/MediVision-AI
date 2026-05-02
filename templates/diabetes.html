@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Diabetes Prediction</title>
+
+<style>
+body {
+    font-family: 'Segoe UI';
+    background: linear-gradient(135deg, #1d2671, #c33764);
+    color: white;
+    text-align: center;
+    padding-top: 50px;
+}
+
+.container {
+    background: rgba(255,255,255,0.1);
+    padding: 30px;
+    border-radius: 20px;
+    width: 400px;
+    margin: auto;
+    backdrop-filter: blur(10px);
+}
+
+input {
+    width: 90%;
+    padding: 10px;
+    margin: 8px;
+    border-radius: 8px;
+    border: none;
+}
+
+button {
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: none;
+    background: #00c6ff;
+    color: white;
+    cursor: pointer;
+}
+
+.result {
+    margin-top: 20px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>🩸 Diabetes Prediction</h2>
+
+<input id="pregnancies" type="number" placeholder="Pregnancies (0–15)">
+<small>Number of times pregnant</small>
+
+<input id="glucose" type="number" placeholder="Glucose (70–200)">
+<small>Normal fasting: 70–99 mg/dL</small>
+
+<input id="bloodpressure" type="number" placeholder="Blood Pressure (60–140)">
+<small>Normal: ~120/80 mmHg</small>
+
+<input id="skinthickness" type="number" placeholder="Skin Thickness (10–50)">
+<small>Measured in mm (enter 0 if unknown)</small>
+
+<input id="insulin" type="number" placeholder="Insulin (15–276)">
+<small>Measured in µU/mL (enter 0 if unknown)</small>
+
+<input id="bmi" type="number" step="0.1" placeholder="BMI (18–40)">
+<p style="font-size: 12px;">
+BMI = Weight (kg) / Height² (m²)
+</p>
+<small>Normal: 18.5–24.9</small>
+
+<input id="dpf" type="number" step="0.01" placeholder="DPF (0.1–2.5)">
+<small>Family history (enter 0.5 if unknown)</small>
+
+<input id="age" type="number" placeholder="Age">
+
+<button onclick="predictDiabetes()">Predict</button>
+
+<div class="result" id="result"></div>
+
+</div>
+
+<script>
+async function predictDiabetes() {
+
+    const data = {
+        pregnancies: +document.getElementById("pregnancies").value || 0,
+        glucose: +document.getElementById("glucose").value || 0,
+        bloodpressure: +document.getElementById("bloodpressure").value || 0,
+        skinthickness: +document.getElementById("skinthickness").value || 0,
+        insulin: +document.getElementById("insulin").value || 0,
+        bmi: +document.getElementById("bmi").value || 0,
+        dpf: +document.getElementById("dpf").value || 0.5,
+        age: +document.getElementById("age").value || 0
+    };
+
+    
+    if (data.glucose < 50 || data.glucose > 300) {
+        alert("Enter valid glucose value (50–300)");
+        return;
+    }
+
+    if (data.bmi < 10 || data.bmi > 60) {
+        alert("Enter valid BMI");
+        return;
+    }
+
+    if (data.age <= 0) {
+        alert("Enter valid age");
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/predict/diabetes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        console.log("Response:", result); // 🔥 Debug
+
+        if (result.success) {
+            const r = result.prediction;
+
+            document.getElementById("result").innerHTML = `
+                <h3>${r.result}</h3>
+                <ul>
+                    ${r.precautions.map(p => `<li>${p}</li>`).join('')}
+                </ul>
+
+                <p style="font-size:12px; color:lightgray;">
+                    ⚠️ This is an AI-based prediction, not a medical diagnosis.
+                </p>
+            `;
+        } else {
+            document.getElementById("result").innerHTML = "Error: " + result.error;
+        }
+
+    } catch (error) {
+        console.error(error);
+        document.getElementById("result").innerHTML = "Server error";
+    }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Brain Tumor Detection</title>
+
+<style>
+body {
+    font-family: 'Segoe UI';
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+    text-align: center;
+    padding-top: 50px;
+}
+
+.container {
+    background: rgba(255,255,255,0.1);
+    width: 420px;
+    margin: auto;
+    padding: 30px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+}
+
+input {
+    margin-top: 15px;
+}
+
+button {
+    margin-top: 15px;
+    padding: 10px 25px;
+    border-radius: 20px;
+    border: none;
+    background: #00c6ff;
+    color: white;
+    cursor: pointer;
+}
+
+img {
+    width: 220px;
+    margin-top: 15px;
+    display: none;
+    border-radius: 10px;
+}
+
+.result {
+    margin-top: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>🧠 Brain Tumor Detection</h2>
+
+<input type="file" id="image">
+
+<br>
+
+<img id="preview">
+
+<br>
+
+<button onclick="predict()">Predict</button>
+
+<div class="result" id="result"></div>
+
+</div>
+
+<script>
+
+// image preview
+document.getElementById("image").addEventListener("change", function() {
+    const file = this.files[0];
+    const img = document.getElementById("preview");
+
+    if (file) {
+        img.src = URL.createObjectURL(file);
+        img.style.display = "block";
+    }
+});
+
+async function predict() {
+
+    const fileInput = document.getElementById("image");
+
+    if (!fileInput.files.length) {
+        alert("Please upload image");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+
+    const res = await fetch("/api/predict/brain", {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await res.json();
+
+    console.log(data);
+
+    if (data.success) {
+        const r = data.prediction;
+
+        document.getElementById("result").innerHTML = `
+            <h3>${r.result}</h3>
+            <p>Confidence: ${r.confidence}%</p>
+        `;
+    } else {
+        document.getElementById("result").innerHTML =
+            "Error: " + data.error;
+    }
+}
+</script>
+
+</body>
+</html>

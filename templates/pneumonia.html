@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pneumonia Detection</title>
+
+<style>
+body {
+    font-family: 'Segoe UI';
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+    text-align: center;
+    padding-top: 40px;
+}
+
+.container {
+    background: rgba(255,255,255,0.08);
+    padding: 30px;
+    border-radius: 20px;
+    width: 420px;
+    margin: auto;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+input {
+    margin: 10px 0;
+}
+
+button {
+    padding: 12px 25px;
+    border-radius: 25px;
+    border: none;
+    background: #00c6ff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #0072ff;
+    transform: scale(1.05);
+}
+
+img {
+    margin-top: 15px;
+    width: 230px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+
+.result {
+    margin-top: 20px;
+}
+
+ul {
+    text-align: left;
+    margin-top: 10px;
+}
+
+.loader {
+    display: none;
+    margin-top: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>🫁 Pneumonia Detection</h2>
+
+<input type="file" id="image">
+
+<br>
+
+<button onclick="predict()">Upload & Predict</button>
+
+<div class="loader" id="loader">⏳ Processing...</div>
+
+<br>
+
+<img id="preview" style="display:none;">
+
+<div class="result" id="result"></div>
+
+</div>
+
+<script>
+
+// Preview Image
+document.getElementById("image").addEventListener("change", function() {
+    const file = this.files[0];
+    const preview = document.getElementById("preview");
+
+    if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+    }
+});
+
+// Predict Function
+async function predict() {
+
+    const fileInput = document.getElementById("image");
+    const loader = document.getElementById("loader");
+    const resultDiv = document.getElementById("result");
+
+    if (!fileInput.files.length) {
+        alert("Please select an image");
+        return;
+    }
+
+    loader.style.display = "block";
+    resultDiv.innerHTML = "";
+
+    const formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+
+    try {
+        const res = await fetch('/api/predict/pneumonia', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await res.json();
+
+        loader.style.display = "none";
+
+        if (result.success) {
+
+            const r = result.prediction;
+
+            resultDiv.innerHTML = `
+                <h3>${r.result}</h3>
+                <p><b>Confidence:</b> ${r.confidence}%</p>
+                <p><b>Severity:</b> ${r.severity}</p>
+
+                <img src="${r.image}" alt="Heatmap Result">
+
+                <h4>Precautions:</h4>
+                <ul>
+                    ${r.precautions.map(p => `<li>${p}</li>`).join('')}
+                </ul>
+
+                <p style="font-size:12px; color:lightgray;">
+                    ⚠️ Red areas show model focus, not exact infection region.
+                </p>
+            `;
+        } else {
+            resultDiv.innerHTML = "❌ Error: " + result.error;
+        }
+
+    } catch (err) {
+        loader.style.display = "none";
+        resultDiv.innerHTML = "❌ Server error";
+        console.error(err);
+    }
+}
+
+</script>
+
+</body>
+</html>
+

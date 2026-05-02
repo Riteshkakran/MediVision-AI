@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Disease Prediction</title>
+
+<style>
+body {
+    font-family: 'Segoe UI';
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+    text-align: center;
+    padding-top: 80px;
+}
+
+.container {
+    background: rgba(255,255,255,0.1);
+    padding: 30px;
+    border-radius: 20px;
+    width: 400px;
+    margin: auto;
+    backdrop-filter: blur(10px);
+}
+
+input {
+    width: 90%;
+    padding: 12px;
+    margin: 10px;
+    border-radius: 8px;
+    border: none;
+}
+
+button {
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: none;
+    background: #00c6ff;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0072ff;
+}
+
+.result {
+    margin-top: 20px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>🩺 Disease Prediction</h2>
+
+<p>Enter symptoms (comma separated)</p>
+
+<input id="symptoms" placeholder="e.g. fever, cough, headache">
+
+<button onclick="predictDisease()">Predict</button>
+
+<div class="result" id="result"></div>
+
+</div>
+
+<script>
+async function predictDisease() {
+    const input = document.getElementById("symptoms").value;
+
+    if (!input) {
+        alert("Please enter symptoms");
+        return;
+    }
+
+    const symptoms = input.split(",").map(s => s.trim());
+
+    try {
+        const res = await fetch('/api/predict/disease', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ symptoms })
+        });
+
+        const data = await res.json();
+
+        const resultDiv = document.getElementById("result");
+
+        if (data.success) {
+            const d = data.prediction;
+
+            resultDiv.innerHTML = `
+                <h3>🦠 Disease: ${d.disease}</h3>
+                <h4>🛡️ Precautions:</h4>
+                <ul>
+                    ${d.precautions.map(p => `<li>${p}</li>`).join('')}
+                </ul>
+            `;
+        } else {
+            resultDiv.innerHTML = "<p>Error: " + data.error + "</p>";
+        }
+
+    } catch (err) {
+        console.error(err);
+        document.getElementById("result").innerHTML = "Server error";
+    }
+}
+</script>
+
+</body>
+</html>

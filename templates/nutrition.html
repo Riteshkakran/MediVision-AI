@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Vitamin & Mineral Deficiency</title>
+
+<style>
+body {
+    font-family: 'Segoe UI';
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    color: white;
+    text-align: center;
+    padding-top: 40px;
+}
+
+.container {
+    background: rgba(255,255,255,0.1);
+    padding: 30px;
+    border-radius: 20px;
+    width: 500px;
+    margin: auto;
+    backdrop-filter: blur(10px);
+}
+
+.symptoms {
+    text-align: left;
+    margin-top: 20px;
+}
+
+label {
+    display: block;
+    margin: 5px 0;
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px 25px;
+    border-radius: 20px;
+    border: none;
+    background: #00c6ff;
+    color: white;
+    cursor: pointer;
+}
+
+.result {
+    margin-top: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>🥗 Vitamin & Mineral Deficiency Checker</h2>
+
+<p>Select your symptoms:</p>
+
+<div class="symptoms">
+
+<label><input type="checkbox" value="fatigue"> Fatigue</label>
+<label><input type="checkbox" value="weakness"> Weakness</label>
+<label><input type="checkbox" value="hair_loss"> Hair Loss</label>
+<label><input type="checkbox" value="pale_skin"> Pale Skin</label>
+<label><input type="checkbox" value="bone_pain"> Bone Pain</label>
+<label><input type="checkbox" value="muscle_cramps"> Muscle Cramps</label>
+<label><input type="checkbox" value="dry_skin"> Dry Skin</label>
+<label><input type="checkbox" value="vision_issues"> Vision Issues</label>
+<label><input type="checkbox" value="bleeding_gums"> Bleeding Gums</label>
+<label><input type="checkbox" value="slow_healing"> Slow Healing</label>
+
+</div>
+
+<button onclick="checkDeficiency()">Check Deficiency</button>
+
+<div class="result" id="result"></div>
+
+</div>
+
+<script>
+async function checkDeficiency() {
+
+    const selected = [];
+
+    document.querySelectorAll('input[type="checkbox"]:checked')
+        .forEach(cb => selected.push(cb.value));
+
+    if (selected.length === 0) {
+        alert("Please select symptoms");
+        return;
+    }
+
+    const res = await fetch("/api/nutrition", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ symptoms: selected })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+
+        const r = data.result;
+
+        document.getElementById("result").innerHTML = `
+            <h3>${r.deficiency}</h3>
+            <p><b>Recommended Foods:</b></p>
+            <ul>
+                ${r.foods.map(f => `<li>${f}</li>`).join('')}
+            </ul>
+
+            <p style="font-size:12px; color:lightgray;">
+                ⚠️ This is an AI-based suggestion, not a medical diagnosis.
+            </p>
+        `;
+    } else {
+        document.getElementById("result").innerHTML =
+            "Error: " + data.error;
+    }
+}
+</script>
+
+</body>
+</html>
