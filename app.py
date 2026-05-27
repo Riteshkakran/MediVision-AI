@@ -6,7 +6,7 @@ from flask_cors import CORS
 # Service imports
 from services.disease import predict_disease_service
 from services.diabetes import predict_diabetes_service
-# from services.pneumonia import predict_pneumonia_service
+from services.pneumonia import predict_pneumonia_service
 # from services.brain import predict_brain_service
 from services.doctors import get_doctors_service
 
@@ -35,9 +35,9 @@ def diabetes():
     return render_template('diabetes.html')
 
 
-# @app.route('/pneumonia')
-# def pneumonia():
-#     return render_template('pneumonia.html')
+@app.route('/pneumonia')
+def pneumonia():
+    return render_template('pneumonia.html')
 
 
 # @app.route('/brain')
@@ -67,14 +67,14 @@ def api_predict_diabetes():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
-# @app.route('/api/predict/pneumonia', methods=['POST'])
-# def api_predict_pneumonia():
-#     try:
-#         file = request.files.get('file')
-#         prediction = predict_pneumonia_service(file)
-#         return jsonify({"success": True, "prediction": prediction})
-#     except Exception as e:
-#         return jsonify({"success": False, "error": str(e)}), 500
+@app.route('/api/predict/pneumonia', methods=['POST'])
+def api_predict_pneumonia():
+    try:
+        file = request.files.get('file')
+        prediction = predict_pneumonia_service(file)
+        return jsonify({"success": True, "prediction": prediction})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 # @app.route('/api/predict/brain', methods=['POST'])
